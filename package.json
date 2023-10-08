@@ -1,13 +1,13 @@
 {
   "name": "immersive-controls",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Immersive controls for THREE.js powered website",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "jest --config jestconfig.json",
+    "test": "jest --config jestconfig.json --passWithNoTests",
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "prepublishOnly": "npm test && npm run lint",
     "prepare": "npm run build",
@@ -33,6 +33,7 @@
   "homepage": "https://github.com/justabayet/immersive-controls#readme",
   "devDependencies": {
     "@types/jest": "^29.5.2",
+    "@types/three": "^0.154.0",
     "jest": "^29.6.1",
     "prettier": "^3.0.0",
     "ts-jest": "^29.1.1",
@@ -42,5 +43,10 @@
   },
   "files": [
     "lib/**/*"
-  ]
+  ],
+  "dependencies": {
+    "eslint": "^8.44.0",
+    "sweetalert2": "^11.7.32",
+    "three": "^0.154.0"
+  }
 }

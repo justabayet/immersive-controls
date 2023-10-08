@@ -1,7 +1,3 @@
-export const Greeter = (name1: string) => {
-  return `Hello ${name1}`
-}
-
-Greeter('abc')
-
-const a = 0
+export { ControlManager } from './ControlManager'
+export { PLUGIN_KEYS, FirstPersonPlugin, GyroscopePlugin } from './plugins'
+export type { Orientation } from './types'

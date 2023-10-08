@@ -1,4 +1,4 @@
-import { Euler, Vector3, Quaternion, Object3D, MathUtils } from 'three'
+import { Vector3, Quaternion, Object3D, MathUtils } from 'three'
 import { ControlPlugin } from './ControlPluginInterface'
 import { PLUGIN_KEYS } from './keys'
 import { type Orientation } from '../types'
@@ -51,12 +51,10 @@ class GyroscopePlugin extends ControlPlugin {
 
     if (GyroscopePlugin.isSupported) {
       this.setupSupport()
+    } else if (!GyroscopePlugin.permissionAsked) {
+      this.askPermission()
     } else {
-      if (!GyroscopePlugin.permissionAsked) {
-        this.askPermission()
-      } else {
-        Logger.debug('Gyroscope  not supported')
-      }
+      Logger.debug('Gyroscope  not supported')
     }
   }
 
@@ -70,14 +68,14 @@ class GyroscopePlugin extends ControlPlugin {
             this.setupSupport()
             break
           case 'denied':
-            void Swal.fire({
+            Swal.fire({
               title: 'Gyroscope access denied',
               text: 'The experience will be degraded.',
               confirmButtonText: 'I Understand, Proceed Anyway :('
             })
             break
           default: // unsupported
-            void Swal.fire({
+            Swal.fire({
               title: 'Gyroscope blocked',
               text: 'Your experience may be limited. Please consider using a different browser such as Google Chrome, or enable gyroscope access in your current browser settings.',
               confirmButtonText: 'I Understand, Proceed Anyway :('
@@ -109,40 +107,46 @@ class GyroscopePlugin extends ControlPlugin {
     if (!this.enabled) {
       Logger.debug('Trying to update gyro controls. But it is not in used.')
     } else {
-      if (this.deviceOrientation == null) {
-        return
-      }
+      if (this.deviceOrientation == null) return
 
       if (this.logUpdateDirection) this.logUpdateDirection(this.deviceOrientation)
 
-      const alpha =
-        this.deviceOrientation.alpha != null
-          ? MathUtils.degToRad(this.deviceOrientation.alpha + this.gyroOffset.alpha)
-          : 0 // Z
-      const beta =
-        this.deviceOrientation.beta != null ? MathUtils.degToRad(this.deviceOrientation.beta + this.gyroOffset.beta) : 0 // X'
-      const gamma =
-        this.deviceOrientation.gamma != null
-          ? MathUtils.degToRad(this.deviceOrientation.gamma + this.gyroOffset.gamma)
-          : 0 // Y''
-      const orient = this.screenOrientation != null ? MathUtils.degToRad(this.screenOrientation) : 0 // O
+      const { alpha, beta, gamma, orient } = this.getUpdatedQuatValues(this.deviceOrientation)
 
       // There was a bug, when alpha reached 0 the camera jumped. This is a dead simple dirty workaround fixing it.
-      if (alpha === 0) {
-        return
-      }
+      if (alpha === 0) return
 
-      setObjectQuaternion(this.targetQuaternion, alpha, beta, gamma, orient)
-
-      this.targetQuaternion = this.initialRotation.clone().multiply(this.targetQuaternion)
-
-      if (this.enableInertia) {
-        this.object.quaternion.slerp(this.targetQuaternion, this.inertiaFactor)
-      } else {
-        this.object.quaternion.copy(this.targetQuaternion)
-      }
+      this.updateObjectRotation(alpha, beta, gamma, orient)
 
       return this.deviceOrientation
+    }
+  }
+
+  private getUpdatedQuatValues (orientation: Orientation) {
+    const alpha = orientation.alpha != null
+        ? MathUtils.degToRad(orientation.alpha + this.gyroOffset.alpha)
+        : 0 // Z
+    const beta = orientation.beta != null
+        ? MathUtils.degToRad(orientation.beta + this.gyroOffset.beta)
+        : 0 // X'
+    const gamma = orientation.gamma != null
+        ? MathUtils.degToRad(orientation.gamma + this.gyroOffset.gamma)
+        : 0 // Y''
+    const orient = this.screenOrientation != null ? MathUtils.degToRad(this.screenOrientation) : 0 // O
+
+    return { alpha, beta, gamma, orient }
+
+  }
+
+  private updateObjectRotation (alpha: number, beta: number, gamma: number, orient: number) {
+    setObjectQuaternion(this.targetQuaternion, alpha, beta, gamma, orient)
+
+    this.targetQuaternion = this.initialRotation.clone().multiply(this.targetQuaternion)
+
+    if (this.enableInertia) {
+      this.object.quaternion.slerp(this.targetQuaternion, this.inertiaFactor)
+    } else {
+      this.object.quaternion.copy(this.targetQuaternion)
     }
   }
 

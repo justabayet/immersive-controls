@@ -35,7 +35,7 @@ type PermissionStatus = 'granted' | 'denied' | 'unsupported'
 export async function askGyroscopePermission(): Promise<PermissionStatus> {
   // source : https://leemartin.dev/how-to-request-device-motion-and-orientation-permission-in-ios-13-74fc9d6cd140
 
-  if(!window.DeviceOrientationEvent) {
+  if (!window.DeviceOrientationEvent) {
     return 'unsupported'
   }
 

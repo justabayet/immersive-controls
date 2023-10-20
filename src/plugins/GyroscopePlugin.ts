@@ -122,23 +122,16 @@ class GyroscopePlugin extends ControlPlugin {
     }
   }
 
-  private getUpdatedQuatValues (orientation: Orientation) {
-    const alpha = orientation.alpha != null
-        ? MathUtils.degToRad(orientation.alpha + this.gyroOffset.alpha)
-        : 0 // Z
-    const beta = orientation.beta != null
-        ? MathUtils.degToRad(orientation.beta + this.gyroOffset.beta)
-        : 0 // X'
-    const gamma = orientation.gamma != null
-        ? MathUtils.degToRad(orientation.gamma + this.gyroOffset.gamma)
-        : 0 // Y''
+  private getUpdatedQuatValues(orientation: Orientation) {
+    const alpha = orientation.alpha != null ? MathUtils.degToRad(orientation.alpha + this.gyroOffset.alpha) : 0 // Z
+    const beta = orientation.beta != null ? MathUtils.degToRad(orientation.beta + this.gyroOffset.beta) : 0 // X'
+    const gamma = orientation.gamma != null ? MathUtils.degToRad(orientation.gamma + this.gyroOffset.gamma) : 0 // Y''
     const orient = this.screenOrientation != null ? MathUtils.degToRad(this.screenOrientation) : 0 // O
 
     return { alpha, beta, gamma, orient }
-
   }
 
-  private updateObjectRotation (alpha: number, beta: number, gamma: number, orient: number) {
+  private updateObjectRotation(alpha: number, beta: number, gamma: number, orient: number) {
     setObjectQuaternion(this.targetQuaternion, alpha, beta, gamma, orient)
 
     this.targetQuaternion = this.initialRotation.clone().multiply(this.targetQuaternion)

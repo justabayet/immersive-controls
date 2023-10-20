@@ -77,7 +77,7 @@ class GyroscopePlugin extends ControlPlugin {
           default: // unsupported
             Swal.fire({
               title: 'Gyroscope blocked',
-              text: 'Your experience may be limited. Please consider using a different browser such as Google Chrome, or enable gyroscope access in your current browser settings.',
+              text: 'Experience limited. Consider using Google Chrome, or enable gyroscope access in your current browser settings.',
               confirmButtonText: 'I Understand, Proceed Anyway :('
             })
         }

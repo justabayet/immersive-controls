@@ -34,25 +34,31 @@ type PermissionStatus = 'granted' | 'denied' | 'unsupported'
 
 export async function askGyroscopePermission(): Promise<PermissionStatus> {
   // source : https://leemartin.dev/how-to-request-device-motion-and-orientation-permission-in-ios-13-74fc9d6cd140
+  Logger.debug('askGyroscopePermission')
 
   if (!window.DeviceOrientationEvent) {
+    Logger.debug('askGyroscopePermission: !window.DeviceOrientationEvent', { DeviceOrientationEvent: !window.DeviceOrientationEvent })
     return 'unsupported'
   }
 
   const requestPermission = (window.DeviceOrientationEvent as unknown as DeviceOrientationEventiOS).requestPermission
+  Logger.debug('askGyroscopePermission: requestPermission', { requestPermission })
+
   const isIOs = typeof requestPermission === 'function'
   if (isIOs) {
     const requestResponse = await requestPermission()
       .then((response) => {
+        Logger.debug('askGyroscopePermission: iOS requestPermission response', { response })
         return response
       })
       .catch((reason) => {
-        Logger.debug("Could'nt get permission for gyroscope.", reason)
+        Logger.debug('askGyroscopePermission: Could\'nt get permission for gyroscope.', reason)
         return 'unsupported'
       })
     return requestResponse as PermissionStatus
   } else {
     const queryValue = await navigator.permissions.query({ name: 'gyroscope' } as any)
+    Logger.debug('askGyroscopePermission: no iOS', { queryValue })
     const state = queryValue.state
     return state !== 'granted' ? 'unsupported' : 'granted'
   }

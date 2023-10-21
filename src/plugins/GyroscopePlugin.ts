@@ -49,6 +49,8 @@ class GyroscopePlugin extends ControlPlugin {
     this.onBecomingAvailable = onBecomingAvailable
     this.logUpdateDirection = logUpdateDirection
 
+    Logger.debug('Gyroscope  constructor:', { isSupported: GyroscopePlugin.isSupported, permissionAsked: !GyroscopePlugin.permissionAsked })
+
     if (GyroscopePlugin.isSupported) {
       this.setupSupport()
     } else if (!GyroscopePlugin.permissionAsked) {
@@ -63,6 +65,7 @@ class GyroscopePlugin extends ControlPlugin {
 
     askGyroscopePermission()
       .then((canUse) => {
+        Logger.debug('Answer askGyroscopePermission', { canUse })
         switch (canUse) {
           case 'granted':
             this.setupSupport()
@@ -94,6 +97,7 @@ class GyroscopePlugin extends ControlPlugin {
       // If the first time this event is triggered with a value in the alpha field.
       // It means that the device support this feature.
       if (!GyroscopePlugin.isSupported && event.alpha != null) {
+        Logger.debug('Gyroscope value received')
         this.onBecomingAvailable()
         this.updateOffset()
         GyroscopePlugin.isSupported = true

@@ -57,9 +57,14 @@ export async function askGyroscopePermission(): Promise<PermissionStatus> {
       })
     return requestResponse as PermissionStatus
   } else {
-    const queryValue = await navigator.permissions.query({ name: 'gyroscope' } as any)
-    Logger.debug('askGyroscopePermission: no iOS', { queryValue })
-    const state = queryValue.state
-    return state !== 'granted' ? 'unsupported' : 'granted'
+    try {
+      const queryValue = await navigator.permissions.query({ name: 'gyroscope' } as any)
+      Logger.debug('askGyroscopePermission: no iOS', { queryValue })
+      const state = queryValue.state
+      return state !== 'granted' ? 'unsupported' : 'granted'
+    } catch(error: unknown) {
+      Logger.debug('askGyroscopePermission: exception when querying permission', { perm: 'unsupported' })
+      return 'unsupported'
+    }
   }
 }
